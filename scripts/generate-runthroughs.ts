@@ -128,6 +128,15 @@ const sections = PERSONAS.map((p) => {
   return `## ${p.name} — ${p.headline}
 
 **As given in the brief:** ${p.storyFromBrief}
+${
+  p.encodingAssumptions?.length
+    ? `\n**Where I had to fill in a number the brief did not give.** These drive the
+result materially, so if your expected range differs from mine, this is almost
+certainly where the difference comes from:\n\n${p.encodingAssumptions
+        .map((s) => `- ${s}`)
+        .join('\n')}\n`
+    : ''
+}
 
 ### Questions the adaptive interview actually asked
 

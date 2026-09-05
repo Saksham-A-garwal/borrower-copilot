@@ -14,6 +14,13 @@ export interface Persona {
   name: string;
   headline: string;
   storyFromBrief: string;
+  /**
+   * Where the brief left a number out and I had to supply one. These drive the
+   * results materially, so they are stated in RUNTHROUGHS.md rather than
+   * buried here -- if Lokta's own expected range differs, this is where the
+   * difference will come from, and it should be arguable rather than hidden.
+   */
+  encodingAssumptions?: string[];
   answers: Answers;
   /** Questions the adaptive flow would not have shown this borrower. */
   notAskedNote: string;
@@ -55,6 +62,10 @@ export const PRIYA: Persona = {
     offerRatePct: 14.0,
     offerProcessingFeePct: 2.0,
   },
+  encodingAssumptions: [
+    'The brief gives Priya ₹28,000 of rent but no other living costs. I encoded total household expenses as ₹52,000, i.e. rent plus ₹24,000 for a single professional in Bengaluru. This is the single biggest driver of her result: at ₹35,000 total she clears her full ₹8,00,000 ask, and at ₹52,000 she does not.',
+    'Her ₹1,10,000 is treated as 15% variable pay, which a lender counts at half and this app counts at a quarter. The brief does not say her pay is variable; this is a conservative reading of an MNC engineering salary.',
+  ],
   notAskedNote:
     'Never asked about ITR, bank credits, GST, worst month, or banked income share: none of those apply to a salaried borrower.',
 };
@@ -97,6 +108,11 @@ export const RAVI: Persona = {
     expectedAdditionalMonthlyIncome: 35_000,
     expectedAdditionalMonthlyCost: 14_000,
   },
+  encodingAssumptions: [
+    'The brief gives a ₹40,000–80,000 cash range. I encoded ₹60,000 as his "typical month" and ₹40,000 as his worst month — the worst month is what drives the safe number, so the bottom of his own stated range is used, not the midpoint.',
+    'Monthly bank credits of ₹2,60,000 are my estimate of kirana turnover consistent with that cash income. The brief does not state turnover, and this figure is what lets a secured lender size him off banking surrogate rather than his ₹4,20,000 ITR.',
+    'Household expenses of ₹30,000 and the ₹35,000/₹14,000 productive income and cost estimates for the second stock line are mine; the brief gives none of them.',
+  ],
   notAskedNote:
     'Never asked about employer category, years at employer, or variable pay share: none of those apply to a business owner. Credit-card utilisation was skipped because he has no credit history.',
 };
@@ -137,6 +153,11 @@ export const ANITA: Persona = {
     expectedAdditionalMonthlyCost: 2_000,
     preferredTenureMonths: 36,
   },
+  encodingAssumptions: [
+    'The brief gives ₹35,000 outstanding across three app loans at 30%+ but no EMI figure. I encoded ₹4,500/month, consistent with short-tenure app loans amortising fast at that rate.',
+    'Household expenses of ₹18,000 are mine; the brief gives none. Note the engine then overrides this upward to its ₹20,000 plausibility floor for a tier-2 household with three dependants, which is what tips her surplus negative.',
+    'The ₹9,000 extra income and ₹2,000 extra running cost from the e-scooter are my estimates of doubled delivery runs, not figures from the brief.',
+  ],
   notAskedNote:
     'Never asked about ITR, GST or employer: neither applies to platform and piece-rate work. Credit-card utilisation was skipped because she has no card.',
 };

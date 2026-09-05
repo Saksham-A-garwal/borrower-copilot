@@ -132,6 +132,8 @@ body {
 }
 
 .q-label {
+  /* Rendered as a real <label> for single-input questions, so force block. */
+  display: block;
   font-size: 1.05rem;
   font-weight: 600;
   margin-bottom: 0.15rem;

@@ -8,6 +8,14 @@ answers exactly as recorded in [`src/personas/index.ts`](src/personas/index.ts).
 
 **As given in the brief:** Software engineer at a large MNC for 5 years. Net ₹1,10,000/month. One car loan, EMI ₹14,000, 2 years left. Credit score 780. Rents at ₹28,000. Wants ₹8,00,000 personal loan for a wedding.
 
+**Where I had to fill in a number the brief did not give.** These drive the
+result materially, so if your expected range differs from mine, this is almost
+certainly where the difference comes from:
+
+- The brief gives Priya ₹28,000 of rent but no other living costs. I encoded total household expenses as ₹52,000, i.e. rent plus ₹24,000 for a single professional in Bengaluru. This is the single biggest driver of her result: at ₹35,000 total she clears her full ₹8,00,000 ask, and at ₹52,000 she does not.
+- Her ₹1,10,000 is treated as 15% variable pay, which a lender counts at half and this app counts at a quarter. The brief does not say her pay is variable; this is a conservative reading of an MNC engineering salary.
+
+
 ### Questions the adaptive interview actually asked
 
 10 of 10 must-questions answered, plus 15 additional questions relevant to this profile (15 applied in total, 0 left unanswered).
@@ -122,6 +130,15 @@ WALK AWAY IF
 ## Ravi, 42 — Mysuru · self-employed
 
 **As given in the brief:** Kirana store for 14 years. Cash income ₹40,000–80,000/month; ITR shows ₹4,20,000/year. Owns the shop premises, about ₹45,00,000, unencumbered. Never taken a formal loan; no credit score. Wife earns ₹18,000 teaching. Wants ₹15,00,000 for a second stock line and a delivery vehicle.
+
+**Where I had to fill in a number the brief did not give.** These drive the
+result materially, so if your expected range differs from mine, this is almost
+certainly where the difference comes from:
+
+- The brief gives a ₹40,000–80,000 cash range. I encoded ₹60,000 as his "typical month" and ₹40,000 as his worst month — the worst month is what drives the safe number, so the bottom of his own stated range is used, not the midpoint.
+- Monthly bank credits of ₹2,60,000 are my estimate of kirana turnover consistent with that cash income. The brief does not state turnover, and this figure is what lets a secured lender size him off banking surrogate rather than his ₹4,20,000 ITR.
+- Household expenses of ₹30,000 and the ₹35,000/₹14,000 productive income and cost estimates for the second stock line are mine; the brief gives none of them.
+
 
 ### Questions the adaptive interview actually asked
 
@@ -246,6 +263,15 @@ WALK AWAY IF
 ## Anita, 35 — Hubballi · informal
 
 **As given in the brief:** Delivery-platform rider plus home tailoring. ₹26,000–30,000/month, two children, husband unemployed 8 months. Three app loans, ₹35,000 outstanding at 30%+, one EMI bounced last month. Wants ₹1,50,000 for an electric scooter to double delivery runs.
+
+**Where I had to fill in a number the brief did not give.** These drive the
+result materially, so if your expected range differs from mine, this is almost
+certainly where the difference comes from:
+
+- The brief gives ₹35,000 outstanding across three app loans at 30%+ but no EMI figure. I encoded ₹4,500/month, consistent with short-tenure app loans amortising fast at that rate.
+- Household expenses of ₹18,000 are mine; the brief gives none. Note the engine then overrides this upward to its ₹20,000 plausibility floor for a tier-2 household with three dependants, which is what tips her surplus negative.
+- The ₹9,000 extra income and ₹2,000 extra running cost from the e-scooter are my estimates of doubled delivery runs, not figures from the brief.
+
 
 ### Questions the adaptive interview actually asked
 

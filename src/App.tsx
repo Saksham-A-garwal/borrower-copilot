@@ -30,28 +30,26 @@ export default function App() {
 
   const assessment = useMemo(() => (stage === 'results' ? assess(answers) : null), [stage, answers]);
 
+  /**
+   * Move forward exactly one question. `questions` is recomputed from the
+   * answers on every render, so if an answer just changed which questions are
+   * relevant, stepping by one lands on the right next question without any
+   * special casing.
+   */
   const advance = (updated: Answers) => {
     setAnswers(updated);
     const nextQuestions = relevantQuestions(updated);
-    let next = cursor + 1;
-    while (next < nextQuestions.length && isAnswered(updated, nextQuestions[next].key)) {
-      next += 1;
-    }
-    if (next >= nextQuestions.length) {
-      setStage('results');
-    } else {
-      setCursor(next);
-    }
+    if (cursor + 1 >= nextQuestions.length) setStage('results');
+    else setCursor(cursor + 1);
   };
 
   const onAnswer = (key: AnswerKey, value: unknown) => {
     advance({ ...answers, [key]: value } as Answers);
   };
 
-  const onSkip = () => {
-    advance({ ...answers });
-    setCursor((c) => c + 1);
-  };
+  const onSkip = () => advance({ ...answers });
+
+  const goBack = () => setCursor((c) => Math.max(0, c - 1));
 
   const goToResultsNow = () => {
     if (mustDone) setStage('results');
@@ -80,7 +78,14 @@ export default function App() {
         </div>
         {stage === 'interview' && (
           <div className="progress-wrap">
-            <div className="progress-bar">
+            <div
+              className="progress-bar"
+              role="progressbar"
+              aria-valuenow={stats.answered}
+              aria-valuemin={0}
+              aria-valuemax={stats.relevant}
+              aria-label={`${stats.answered} of ${stats.relevant} questions answered`}
+            >
               <div
                 className="progress-fill"
                 style={{ width: `${Math.min(100, (stats.answered / Math.max(stats.relevant, 1)) * 100)}%` }}
@@ -113,16 +118,26 @@ export default function App() {
             onAnswer={onAnswer}
             onSkip={onSkip}
           />
-          {mustDone && (
-            <div className="nav-row">
-              <span style={{ fontSize: '0.8rem', color: 'var(--muted-2)' }}>
-                You've answered enough for a result already.
-              </span>
-              <button className="btn btn-primary btn-small" onClick={goToResultsNow}>
-                See my numbers now →
-              </button>
-            </div>
-          )}
+          <div className="nav-row">
+            <button
+              className="btn btn-ghost btn-small"
+              onClick={goBack}
+              disabled={cursor === 0}
+              aria-label="Go back to the previous question"
+            >
+              ← Back
+            </button>
+            {mustDone && (
+              <>
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted-2)' }}>
+                  You've answered enough for a result already.
+                </span>
+                <button className="btn btn-primary btn-small" onClick={goToResultsNow}>
+                  See my numbers now →
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
 
@@ -132,10 +147,11 @@ export default function App() {
           answeredCount={stats.answered}
           relevantCount={stats.relevant}
           onEditAnswers={() => {
+            // Start from the top so any earlier answer can be corrected, not
+            // just the ones still blank. Back/Next walk the whole set, and
+            // "See my numbers now" returns here once the musts are filled.
             setStage('interview');
-            const qs = relevantQuestions(answers);
-            const firstUnanswered = qs.findIndex((q) => !isAnswered(answers, q.key));
-            setCursor(firstUnanswered === -1 ? qs.length : firstUnanswered);
+            setCursor(0);
           }}
         />
       )}

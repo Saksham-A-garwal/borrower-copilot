@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "description": "A borrower-side self-assessment copilot for Indian retail credit.",
+  "engines": {
+    "node": "^18.0.0 || ^20.0.0 || >=22.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

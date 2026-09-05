@@ -42,6 +42,12 @@ export interface Question {
   payoff?: string;
   /** Adaptive gate. Absent means always ask. */
   shouldAsk?: (a: Answers) => boolean;
+  /**
+   * Additional questions are skippable by default. A few are not: once the
+   * borrower has opened a subject, the follow-up is decision-critical and
+   * skipping it would let silence buy a better answer than any honest reply.
+   */
+  requiredOnceAsked?: boolean;
   /** Allow "I don't know" -- which is never treated as zero. */
   allowUnknown?: boolean;
 }
@@ -374,6 +380,7 @@ export const QUESTIONS: Question[] = [
     moves: ['O1'],
     payoff: 'A bounce last month and a bounce ten months ago are completely different applications.',
     shouldAsk: (a) => (a.missedPaymentsLast12m ?? 0) > 0,
+    requiredOnceAsked: true,
     min: 0,
     max: 24,
   },

@@ -12,7 +12,7 @@
  * what does it truly cost.
  */
 
-import { PRODUCTS, PURPOSE_TO_PRODUCTS, RETIREMENT_AGE } from './constants';
+import { MIN_BORROWER_AGE, PRODUCTS, PURPOSE_TO_PRODUCTS, RETIREMENT_AGE } from './constants';
 import { assessIncome } from './income';
 import { assessAffordability } from './affordability';
 import { assessRate } from './pricing';
@@ -71,7 +71,7 @@ function eligibilityCheck(a: Answers, code: ProductCode): string | undefined {
   const spec = PRODUCTS[code];
   const age = a.age ?? 35;
 
-  if (age < 21) return 'You need to be at least 21 to borrow.';
+  if (age < MIN_BORROWER_AGE) return `You need to be at least ${MIN_BORROWER_AGE} to borrow.`;
   if (maxTenureFor(a, code) < spec.minTenureMonths) {
     return `Your working life left is shorter than the minimum tenure for a ${spec.name.toLowerCase()}.`;
   }

@@ -29,7 +29,7 @@ personas and jump straight to their results, or answer the interview
 yourself starting from "What is the loan for?".
 
 ```bash
-npm run test    # 23 unit tests over the rules engine
+npm run test    # 28 unit tests over the rules engine
 npm run build   # production build (tsc + vite)
 npm run docs    # regenerates RULES.md and RUNTHROUGHS.md from the live engine
 ```
@@ -44,7 +44,7 @@ npm run docs    # regenerates RULES.md and RUNTHROUGHS.md from the live engine
 | [`src/rules/questions.ts`](src/rules/questions.ts) | The adaptive question bank — 10 must-questions, ~25 additional ones, each declaring which output it moves. |
 | [`src/personas/`](src/personas) | Priya, Ravi and Anita, encoded exactly as given in the brief. |
 | [`src/App.tsx`](src/App.tsx), [`src/ui/`](src/ui) | The interview flow and results dashboard. |
-| [`tests/engine.test.ts`](tests/engine.test.ts) | 23 tests: reachability of "don't borrow", lender-vs-safe separation, APR-with-fees correctness, confidence widening with silence, unknown-is-not-zero, product routing. |
+| [`tests/engine.test.ts`](tests/engine.test.ts) | 28 tests: reachability of "don't borrow", lender-vs-safe separation, APR-with-fees correctness, confidence widening with silence, unknown-is-not-zero, product routing, and that silence never buys a better answer than disclosure. |
 | [`RULES.md`](RULES.md) | **Generated.** Every threshold, its value, its justification, its source. Read as carefully as the code. |
 | [`RUNTHROUGHS.md`](RUNTHROUGHS.md) | **Generated.** The three required run-throughs: questions asked, four outputs, Negotiation Card, for Priya, Ravi and Anita. |
 | [`WALKTHROUGH.md`](WALKTHROUGH.md) | The five-minute walkthrough: what I'd build next, what I'd cut. |

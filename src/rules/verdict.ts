@@ -68,6 +68,24 @@ export function assessVerdict(
     });
   }
 
+  /**
+   * A miss was declared but its date was not. Silence must never buy a better
+   * answer than any disclosure could: saying "1 month ago" is a hard stop, so
+   * saying nothing cannot be a clean pass. We do not resolve the unknown to
+   * the worst case either (Rule 3) -- the miss may well be eleven months old.
+   * Instead we refuse to certify the borrower, say so in plain words, and
+   * cap the verdict below BORROW until they tell us.
+   */
+  const missDateUndisclosed = misses > 0 && monthsSince === undefined && !product.secured;
+  if (missDateUndisclosed) {
+    reasons.push({
+      ruleId: 'ADVICE.missDateUnknown',
+      text: `You told us about ${misses} missed payment${
+        misses > 1 ? 's' : ''
+      } but not when the most recent one was. That single fact decides whether a lender sees you as a current risk or an old one, so we cannot give you a clean answer without it. We have assumed it could be recent and held the amount back accordingly — tell us the month and this may improve immediately.`,
+    });
+  }
+
   // --- Hard stop 3: the loan would over-extend the household -------------
   const newEmiAtWanted = emi(wanted, product.rate.band.high, product.tenureMonths);
   const postLoanRatio =
@@ -150,6 +168,16 @@ export function assessVerdict(
     };
   }
 
+  // An undisclosed miss date cannot pass as a clean yes -- see above.
+  if (missDateUndisclosed) {
+    return {
+      verdict: 'BORROW_LESS',
+      headline: `Tell us when you last missed a payment before borrowing ${formatINRShort(wanted)}.`,
+      reasons,
+      hardStops: [],
+    };
+  }
+
   // --- Borrow ------------------------------------------------------------
   reasons.push({
     ruleId: 'VERDICT.borrow',
@@ -190,9 +218,19 @@ export function buildPathToYes(
   const existingEmi = a.existingEmiTotal ?? 0;
 
   const misses = a.missedPaymentsLast12m ?? 0;
-  const monthsSince = a.monthsSinceLastMiss ?? 99;
+  const monthsSince = a.monthsSinceLastMiss;
 
-  if (misses > 0 && monthsSince <= VERDICT_RULES.recentMissMonths) {
+  // Not knowing the date is itself a blocker worth naming, rather than being
+  // silently defaulted to "long ago" -- which would drop this step entirely.
+  if (misses > 0 && monthsSince === undefined) {
+    steps.push({
+      action: 'Tell us the month of your most recent missed payment.',
+      effect:
+        'It is the single most decision-relevant fact you have not given us. A bounce last month and one eleven months ago are completely different applications, and until we know which, we have to hold your amount back.',
+    });
+  }
+
+  if (misses > 0 && monthsSince !== undefined && monthsSince <= VERDICT_RULES.recentMissMonths) {
     const wait = Math.max(0, VERDICT_RULES.cooldownMonths - monthsSince);
     steps.push({
       action: `Pay every instalment on time for the next ${wait} months.`,

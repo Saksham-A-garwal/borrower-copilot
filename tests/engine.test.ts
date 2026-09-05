@@ -119,6 +119,51 @@ describe('confidence widens with silence (Rule 2)', () => {
   });
 });
 
+describe('silence must never buy a better answer than disclosure (Rule 2)', () => {
+  // A borrower with room to spare, so the no-surplus stop cannot mask this.
+  const base = {
+    purpose: 'wedding',
+    amountWanted: 500_000,
+    netMonthlyIncome: 200_000,
+    incomeType: 'salaried',
+    existingEmiTotal: 0,
+    householdMonthlyExpenses: 40_000,
+    age: 35,
+    creditScoreBand: '700_749',
+    cityTier: 'metro',
+    collateralType: 'none',
+    emergencySavingsMonths: 6,
+    missedPaymentsLast12m: 2,
+  } as const;
+
+  const undisclosed = assess({ ...base });
+  const disclosedRecent = assess({ ...base, monthsSinceLastMiss: 1 });
+  const disclosedOld = assess({ ...base, monthsSinceLastMiss: 11 });
+
+  it('declaring a miss but hiding its date does not return a clean BORROW', () => {
+    expect(undisclosed.o1.verdict).not.toBe('BORROW');
+  });
+
+  it('hiding the date is never better than admitting the miss was recent', () => {
+    expect(disclosedRecent.o1.verdict).toBe('DONT_BORROW');
+    // Undisclosed must sit at or below the disclosed-recent outcome.
+    expect(['DONT_BORROW', 'BORROW_LESS']).toContain(undisclosed.o1.verdict);
+  });
+
+  it('but an old miss, once disclosed, is allowed to clear', () => {
+    // Rule 3: unknown is not silently resolved to the worst case either.
+    expect(disclosedOld.o1.verdict).toBe('BORROW');
+  });
+
+  it('names the missing date as the thing holding the answer back', () => {
+    const all = [
+      ...undisclosed.o1.reasons.map((x) => x.text),
+      ...(undisclosed.pathToYes?.steps.map((s) => s.action) ?? []),
+    ].join(' ');
+    expect(all.toLowerCase()).toContain('missed payment');
+  });
+});
+
 describe('unknown is never treated as zero (Rule 3)', () => {
   it('an unknown credit score does not price like the worst possible score', () => {
     const unknown = assess({ ...PRIYA.answers, creditScoreBand: 'unknown' });

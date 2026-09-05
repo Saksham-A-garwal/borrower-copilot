@@ -119,7 +119,7 @@ export function QuestionCard({
         </div>
       )}
 
-      {question.tier === 'additional' && (
+      {question.tier === 'additional' && !question.requiredOnceAsked && (
         <div style={{ marginTop: '0.9rem' }}>
           <button className="btn btn-skip" onClick={onSkip}>
             Skip — I don't know / prefer not to say

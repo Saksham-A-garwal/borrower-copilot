@@ -188,9 +188,25 @@ export function assessAffordability(
     factor *= SAFE_EMI_MODIFIERS.soleEarner;
     factorNotes.push('cut because you are the only earner');
   }
-  if ((a.largeExpenseNext12m ?? 0) > 0) {
-    factor *= SAFE_EMI_MODIFIERS.largeExpenseComing;
-    factorNotes.push(`cut because you expect a ${formatINR(a.largeExpenseNext12m!)} expense this year`);
+  /**
+   * Scale the cut by how big the expense is relative to a year of surplus,
+   * rather than treating every lump sum as identical. A ₹20,000 school fee
+   * and a ₹5,00,000 wedding should not move the number by the same amount --
+   * asking for a rupee figure and then using it as a yes/no would be
+   * collecting precision we throw away.
+   */
+  const lumpSum = a.largeExpenseNext12m ?? 0;
+  if (lumpSum > 0) {
+    const annualSurplus = Math.max(surplus, 1) * 12;
+    const shareOfYear = Math.min(lumpSum / annualSurplus, 1);
+    // Full modifier at one year of surplus or more, tapering to none at zero.
+    const scaled = 1 - (1 - SAFE_EMI_MODIFIERS.largeExpenseComing) * shareOfYear;
+    factor *= scaled;
+    factorNotes.push(
+      `cut by ${((1 - scaled) * 100).toFixed(0)}% because the ${formatINR(
+        lumpSum,
+      )} you expect this year is ${(shareOfYear * 100).toFixed(0)}% of a year's surplus`,
+    );
   }
   if (a.incomeType === 'salaried' && (a.yearsAtCurrentEmployer ?? 99) < 1) {
     factor *= SAFE_EMI_MODIFIERS.jobUnderOneYear;

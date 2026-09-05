@@ -1,0 +1,28 @@
+{
+  "name": "borrower-copilot",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A borrower-side self-assessment copilot for Indian retail credit.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "docs": "tsx scripts/generate-docs.ts && tsx scripts/generate-runthroughs.ts"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^2.1.8"
+  }
+}
